@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  web:
+    image: docker.domain.com/web:3.0.0.0
+    ports:
+      - "8000:8000"
+    networks:
+      - dx-net
+
+networks:
+  dx-net:
+    external:
+      name: ${DX_NETWORK}

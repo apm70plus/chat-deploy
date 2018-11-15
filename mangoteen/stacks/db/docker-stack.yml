@@ -1,0 +1,53 @@
+version: "3"
+services:
+  mysqldb:
+    image: docker.domain.com/mysql:5.5
+    networks:
+      - dx-net
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PWD
+    ports:
+      - "3306:3306"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == $DB_HOST
+
+  mongodb:
+    image: mongo:3.6
+    networks:
+      - dx-net
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      AUTH: "no"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == $DB_HOST
+
+
+  redis:
+    image: docker.domain.com/alpine-redis:3.2
+    networks:
+      - dx-net
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == $DB_HOST
+
+networks:
+  dx-net:
+    external:
+      name: $DX_NETWORK
+
+volumes:
+  mysql_data:
+  mongo_data:
+  redis_data:

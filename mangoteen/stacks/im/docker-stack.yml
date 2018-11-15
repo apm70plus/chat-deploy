@@ -1,0 +1,79 @@
+version: "3"
+services:
+  tms:
+    image: docker.domain.com/tms:3.0.0.0
+    networks:
+      - dx-net
+    volumes:
+      - im-logs:/var/log/dingxin
+    environment:
+      REGISTRY_HOST: registry
+      DB_HOST: mysqldb
+      DB_PWD: leadingMysql@2016
+      DDL_AUTO: update
+      CLUSTER_SITE: 1
+      REDIS_HOST: redis
+      MONGODB_HOST: mongodb
+  tcs1:
+    image: docker.domain.com/tcs:3.0.0.0
+    networks:
+      - dx-net
+    ports:
+      - "1883:1883"
+      - "1884:1884"
+    volumes:
+      - im-logs:/var/log/dingxin
+    environment:
+      REGISTRY_HOST: registry
+      REDIS_HOST: redis
+      TCS_NO: tcs1
+      EXTERNAL_HOST: ${TCS1_EXTERNAL_HOST}
+      EXTERNAL_PORT: ${TCS1_EXTERNAL_PORT}
+  dps1:
+    image: docker.domain.com/dps:3.0.0.0
+    networks:
+      - dx-net
+    volumes:
+      - im-logs:/var/log/dingxin
+    environment:
+      REGISTRY_HOST: registry
+      REDIS_HOST: redis
+
+  flume-dps:
+    image: docker.domain.com/dx-flume:3.0.0
+    #restart: always
+    hostname: flume-dps
+    networks:
+      - dx-net
+    environment:
+      SINK_HOSTS: "dps1"
+      SERVER_TYPE: dps
+
+  flume-tcs:
+    image: docker.domain.com/dx-flume:3.0.0
+    #restart: always
+    hostname: flume-tcs
+    networks:
+      - dx-net
+    environment:
+      SINK_HOSTS: "tcs1"
+      SERVER_TYPE: tcs
+      
+  flume-mongo:
+    image: docker.domain.com/dx-flume:3.0.0
+    #restart: always
+    hostname: flume-mongo
+    networks:
+      - dx-net
+    environment:
+      SINK_HOSTS: "mongodb"
+      SERVER_TYPE: mongo
+
+networks:
+  dx-net:
+    external:
+      name: ${DX_NETWORK}
+
+volumes:
+  im-logs:
+  

@@ -1,0 +1,93 @@
+version: "3"
+services:
+  registry:
+    image: docker.domain.com/dx-registry:3.0.0
+    hostname: registry
+    networks:
+      - dx-net
+    ports:
+      - "8761:8761"
+    volumes:
+      - bs-logs:/var/log/dingxin
+
+  portal:
+    image: docker.domain.com/dx-portal:3.0.0
+    networks:
+      - dx-net
+    ports:
+      - "8080:8080"
+    volumes:
+      - bs-logs:/var/log/dingxin
+
+  uap:
+    image: docker.domain.com/dx-uap:3.0.0
+    networks:
+      - dx-net
+    volumes:
+      - bs-logs:/var/log/dingxin
+    environment:
+      DB_HOST: mysqldb
+      DDL_AUTO: none 
+      JODIS_CACHE_ZK: zk:2181
+
+  core:
+    image: docker.domain.com/dx-core:3.0.0
+    networks:
+      - dx-net
+    volumes:
+      - bs-logs:/var/log/dingxin
+    environment:
+      DB_HOST: mysqldb
+      DDL_AUTO: none
+      JODIS_CACHE_ZK: zk:2181
+
+  open:
+    image: docker.domain.com/dx-open:3.0.0
+    networks:
+      - dx-net
+    volumes:
+      - bs-logs:/var/log/dingxin
+    environment:
+      DB_HOST: mysqldb
+      DDL_AUTO: none
+      JODIS_CACHE_ZK: zk:2181
+
+  filestorage:
+    image: docker.domain.com/dx-filestorage:3.0.0
+    networks:
+      - dx-net
+    ports:
+      - "8090:8090"
+    volumes:
+      - bs-logs:/var/log/dingxin
+      - fs_data:/app/data
+    environment:
+      DB_HOST: mongodb
+      INTERNAL_IP: "filestorage"
+      EXTERNAL_IP: ${FS_EXTERNAL_HOST}
+      EXTERNAL_PORT: ${FS_EXTERNAL_PORT}
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${FS_HOST}
+
+  disk:
+    image: docker.domain.com/dx-disk:3.0.0
+    networks:
+      - dx-net
+    volumes:
+      - bs-logs:/var/log/dingxin
+    environment:
+      DB_HOST: mysqldb
+      DDL_AUTO: none
+      JODIS_CACHE_ZK: zk:2181
+
+volumes:
+  bs-logs:
+  fs_data:
+
+networks:
+  dx-net:
+    external:
+      name: ${DX_NETWORK}
+  

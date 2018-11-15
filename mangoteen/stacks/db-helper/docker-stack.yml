@@ -1,0 +1,15 @@
+version: "3"
+services:
+  mysql-helper:
+    image: docker.domain.com/dx-mysql-helper:5.5
+    networks:
+      - dx-net
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  dx-net:
+    external:
+      name: $DX_NETWORK
+

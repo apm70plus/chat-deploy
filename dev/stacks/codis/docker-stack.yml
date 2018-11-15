@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  zk:
+    image: 'docker.domain.com/dx-zk:3.0.0'
+    networks:
+      - dx-net
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: "server.1=0.0.0.0:2888:3888"
+
+  codis-fe:
+    image: docker.domain.com/dx-codis-fe:3.0.0
+    depends_on:
+      - zk
+      - codis-dashboard
+    networks:
+      - dx-net
+    ports:
+      - "29090:9090"
+    environment:
+      COORDINATOR_NAME: zookeeper
+      COORDINATOR_ADDR: "zk:2181"
+      CODIS_FE_ADDR: "0.0.0.0:9090"
+
+  codis-dashboard:
+    image: docker.domain.com/dx-codis-dashboard:3.0.0
+    depends_on:
+      - zk
+    networks:
+      - dx-net
+    environment:
+      PRODUCT_NAME: codis-dingxin
+      COORDINATOR_NAME: zookeeper
+      COORDINATOR_ADDR: "zk:2181"
+
+  codis-proxy:
+    image: docker.domain.com/dx-codis-proxy:3.0.0
+    depends_on: 
+      - zk
+    networks:
+      - dx-net
+    environment:
+      CODIS_DASHBOARD_ADDR: "codis-dashboard:18080"
+      COORDINATOR_ADDR: "zk:2181"
+      COORDINATOR_NAME: zookeeper
+
+  codis-server:
+    image: docker.domain.com/dx-codis-server:3.0.0
+    networks:
+      - dx-net
+
+networks:
+  dx-net:
+    external:
+      name: $DX_NETWORK

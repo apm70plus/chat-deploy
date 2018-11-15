@@ -1,0 +1,156 @@
+[
+  {
+    "type": "container",
+    "title": "MySQL",
+    "description": "The most popular open-source database",
+    "categories": ["database"],
+    "platform": "linux",
+    "logo": "https://portainer.io/images/logos/mysql.png",
+    "image": "mysql:latest",
+    "env": [
+      {
+        "name": "MYSQL_ROOT_PASSWORD",
+        "label": "Root password"
+      }
+    ],
+    "ports": [
+      "3306/tcp"
+    ],
+    "volumes": ["/var/lib/mysql"]
+  },
+  {
+    "type": "stack",
+    "title": "鼎信数据库更新",
+    "description": "执行鼎信数据库初始化操作",
+    "categories": ["database"],
+    "platform": "linux",
+    "registry": "https://docker.domain.com",
+    "logo": "https://portainer.io/images/logos/mysql.png",
+    "repository": {
+      "url": "http://git.leadingsoft.com.cn/liuyg/lchat-deploy.git",
+      "stackfile": "dev/stacks/db-helper/docker-stack.yml"
+    },
+    "env": [
+      {
+        "name": "DX_NETWORK",
+        "label": "鼎信网络",
+        "description": "Docker Swarm模式下，为鼎信所有服务共享的Overlay网络"
+      }
+    ]
+  },
+  {
+    "type": "stack",
+    "title": "鼎信Codis集群",
+    "description": "鼎信Codis最小集群，仅适用开发环境，生产环境不建议使用.",
+    "categories": ["鼎信","redis"],
+    "platform": "linux",
+    "logo": "https://portainer.io/images/logos/microsoft.png",
+    "registry": "https://docker.domain.com",
+    "repository": {
+      "url": "http://git.leadingsoft.com.cn/liuyg/lchat-deploy.git",
+      "stackfile": "dev/stacks/codis/docker-stack.yml"
+    },
+    "env": [
+      {
+        "name": "DX_NETWORK",
+        "label": "鼎信网络",
+        "description": "Docker Swarm模式下，为鼎信所有服务共享的Overlay网络"
+      }
+    ]
+  },
+  {
+    "type": "stack",
+    "title": "鼎信数据库",
+    "description": "鼎信DB组件，包含MYSQL，MONGODB，REDIS三个服务实例.",
+    "categories": ["鼎信","database"],
+    "platform": "linux",
+    "logo": "https://portainer.io/images/logos/microsoft.png",
+    "registry": "https://docker.domain.com",
+    "repository": {
+      "url": "http://git.leadingsoft.com.cn/liuyg/lchat-deploy.git",
+      "stackfile": "dev/stacks/db/docker-stack.yml"
+    },
+    "env": [
+      {
+        "name": "DX_NETWORK",
+        "label": "鼎信网络",
+        "description": "Docker Swarm模式下，为鼎信所有服务共享的Overlay网络"
+      },
+      {
+        "name": "MYSQL_ROOT_PWD",
+        "label": "MysqlRoot密码",
+        "description": "Mysql Root 用户初始密码"
+      },
+      {
+        "name": "DB_HOST",
+        "label": "运行服务的节点",
+        "description": "数据库这类需要持久化数据的服务（有状态），需要选择一个固定的节点启动容器和存储数据"
+      }
+    ]
+  },
+  {
+    "type": "stack",
+    "title": "鼎信业务平台",
+    "description": "鼎信业务平台组件，包含Portal，FileStorage，Disk, Core, Open, Uap, Registry 7个服务实例.",
+    "categories": ["鼎信","business"],
+    "platform": "linux",
+    "logo": "https://portainer.io/images/logos/microsoft.png",
+    "registry": "https://docker.domain.com",
+    "repository": {
+      "url": "http://git.leadingsoft.com.cn/liuyg/lchat-deploy.git",
+      "stackfile": "dev/stacks/business/docker-stack.yml"
+    },
+    "env": [
+      {
+        "name": "DX_NETWORK",
+        "label": "鼎信网络",
+        "description": "Docker Swarm模式下，为鼎信所有服务共享的Overlay网络"
+      },
+      {
+        "name": "FS_EXTERNAL_HOST",
+        "label": "文件存储外网地址",
+        "description": "文件存储服务允许外部直接访问，所以需要配置外网URI"
+      },
+      {
+        "name": "FS_EXTERNAL_PORT",
+        "label": "文件存储外网端口",
+        "description": "文件存储服务允许外部直接访问，所以需要配置外网URI"
+      },
+      {
+        "name": "FS_HOST",
+        "label": "运行文件服务的节点",
+        "description": "文件存储这类需要持久化数据的服务（有状态），需要选择一个固定的节点启动容器和存储数据"
+      }
+    ]
+  },
+  {
+    "type": "stack",
+    "title": "鼎信IM平台",
+    "description": "鼎信即时通讯平台组件，包含Tcs，Dps，Tms, TcsFlume, DpsFlume 5个服务实例.",
+    "categories": ["鼎信","IM"],
+    "platform": "linux",
+    "logo": "https://portainer.io/images/logos/microsoft.png",
+    "registry": "https://docker.domain.com",
+    "repository": {
+      "url": "http://git.leadingsoft.com.cn/liuyg/lchat-deploy.git",
+      "stackfile": "dev/stacks/im/docker-stack.yml"
+    },
+    "env": [
+      {
+        "name": "DX_NETWORK",
+        "label": "鼎信网络",
+        "description": "Docker Swarm模式下，为鼎信所有服务共享的Overlay网络"
+      },
+      {
+        "name": "TCS1_EXTERNAL_HOST",
+        "label": "Tcs1外网地址",
+        "description": "TCS服务允许外部直接访问，所以需要配置外网URI"
+      },
+      {
+        "name": "TCS1_EXTERNAL_PORT",
+        "label": "TCS1外网端口",
+        "description": "TCS服务允许外部直接访问，所以需要配置外网URI"
+      }
+    ]
+  }
+]
